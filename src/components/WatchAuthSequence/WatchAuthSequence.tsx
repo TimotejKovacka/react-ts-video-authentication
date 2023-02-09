@@ -3,6 +3,7 @@ import WatchAuthCard from "../WatchAuthCard/WatchAuthCard";
 
 interface WatchAuthSequenceProps {
   items: Array<Object & { thumbnail: string }>;
+  setParentState: (sequenceState: WatchAuthSequenceState) => void;
 }
 
 interface WatchAuthSequenceState {

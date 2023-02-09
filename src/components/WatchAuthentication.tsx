@@ -81,16 +81,40 @@ const WatchAuthentication = ({
       }));
     }
     // TODO
+    if (stepState.sequences.length === maxNumberOfTries - 1) {
+      // Go to next page
+      setStepState((state) => ({
+        isValid: false,
+        isSuccessful: false,
+        sequences: [...state.sequences, sequenceState.sequence],
+        sequencesTimes: [...state.sequencesTimes, sequenceState.sequenceTime],
+        sequencesIndividualTimes: [
+          ...state.sequencesIndividualTimes,
+          sequenceState.individualTimes,
+        ],
+      }));
+      return;
+    }
     setStepState((state) => ({
       ...state,
+      isValid: false,
+      sequences: [...state.sequences, sequenceState.sequence],
+      sequencesTimes: [...state.sequencesTimes, sequenceState.sequenceTime],
+      sequencesIndividualTimes: [
+        ...state.sequencesIndividualTimes,
+        sequenceState.individualTimes,
+      ],
     }));
   };
 
   return (
     <div>
       {/* <MultiStepProgressBar step={authState.step} numberOfSteps={4} /> */}
-      <div className='grid grid-cols-3 grid-rows-2 grid-flow-row gap-5'>
-        <WatchAuthSequence items={} />
+      <div className="grid grid-cols-3 grid-rows-2 grid-flow-row gap-5">
+        <WatchAuthSequence
+          items={}
+          setParentState={handleWatchAuthenticationStepSubmit}
+        />
       </div>
     </div>
   );
