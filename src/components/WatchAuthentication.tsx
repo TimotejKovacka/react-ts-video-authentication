@@ -10,7 +10,11 @@ import React, {
 import { MultiStepFormProps } from "./MultiStepForm";
 import MultiStepProgressBar from "./MultiStepProgressBar/MultiStepProgressBar";
 import SuccessfulUnlock from "./SuccessfulUnlock";
-import WatchAuthSequence from "./WatchAuthSequence/WatchAuthSequence";
+import UnsuccessfulUnlock from "./UnsuccessfulUnlock";
+import WatchAuthSequence, {
+  WatchAuthSequenceState,
+} from "./WatchAuthSequence/WatchAuthSequence";
+import { isEqual } from "lodash";
 
 export interface WatchAuthenticationProps extends MultiStepFormProps {
   setFormStep: Dispatch<SetStateAction<number>>;
@@ -24,12 +28,12 @@ type DummyJson = {
   limit: number;
 };
 
-interface WatchAuthenticationState {
+export interface WatchAuthenticationState {
   isValid: boolean | undefined;
   isSuccessful: boolean | undefined;
   sequences: Array<Array<number>>;
   sequencesIndividualTimes: Array<Array<number>>;
-  sequencesTimes: Array<number>;
+  sequencesTimes: Array<number | undefined>;
 }
 
 const WatchAuthentication = ({
@@ -37,9 +41,6 @@ const WatchAuthentication = ({
   setFormStep,
   sequenceSecret,
 }: WatchAuthenticationProps) => {
-  const currentAttemptStartTime = useRef<number>(0);
-  const lastClickStartTime = useRef<number>(0);
-  const currentAttemptSequence = useRef<Array<number>>([]);
   const [stepState, setStepState] = useState<WatchAuthenticationState>({
     isValid: undefined,
     isSuccessful: undefined,
@@ -67,8 +68,12 @@ const WatchAuthentication = ({
     fetchDummy();
   }, []);
 
-  const handleWatchAuthenticationStepSubmit = (sequenceState: any) => {
-    if (sequenceState.sequence === sequenceSecret) {
+  const handleWatchAuthenticationStepSubmit = (
+    sequenceState: WatchAuthSequenceState
+  ) => {
+    console.log("Setting parents state");
+    console.log(isEqual(sequenceSecret, sequenceState.sequence));
+    if (isEqual(sequenceSecret, sequenceState.sequence)) {
       setStepState((state) => ({
         isValid: true,
         isSuccessful: true,
@@ -79,10 +84,9 @@ const WatchAuthentication = ({
           sequenceState.individualTimes,
         ],
       }));
+      return;
     }
-    // TODO
     if (stepState.sequences.length === maxNumberOfTries - 1) {
-      // Go to next page
       setStepState((state) => ({
         isValid: false,
         isSuccessful: false,
@@ -106,16 +110,27 @@ const WatchAuthentication = ({
       ],
     }));
   };
-
+  console.log(stepState);
   return (
     <div>
+      {stepState.isSuccessful !== undefined ? (
+        stepState.isSuccessful ? (
+          <SuccessfulUnlock setFormStep={setFormStep} />
+        ) : (
+          <UnsuccessfulUnlock setFormStep={setFormStep} />
+        )
+      ) : (
+        <div className='grid grid-cols-3 grid-rows-2 grid-flow-row gap-5'>
+          {dummyItems.length > 0 && (
+            <WatchAuthSequence
+              items={dummyItems}
+              parentState={stepState}
+              setParentState={handleWatchAuthenticationStepSubmit}
+            />
+          )}
+        </div>
+      )}
       {/* <MultiStepProgressBar step={authState.step} numberOfSteps={4} /> */}
-      <div className="grid grid-cols-3 grid-rows-2 grid-flow-row gap-5">
-        <WatchAuthSequence
-          items={}
-          setParentState={handleWatchAuthenticationStepSubmit}
-        />
-      </div>
     </div>
   );
 };

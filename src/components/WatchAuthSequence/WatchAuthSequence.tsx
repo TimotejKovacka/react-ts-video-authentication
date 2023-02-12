@@ -1,27 +1,36 @@
 import React, { useEffect, useRef, useState } from "react";
 import WatchAuthCard from "../WatchAuthCard/WatchAuthCard";
+import { WatchAuthenticationState } from "../WatchAuthentication";
 
 interface WatchAuthSequenceProps {
-  items: Array<Object & { thumbnail: string }>;
+  items: Array<Array<Object & { thumbnail: string }>>;
+  parentState: WatchAuthenticationState;
   setParentState: (sequenceState: WatchAuthSequenceState) => void;
 }
 
-interface WatchAuthSequenceState {
+export interface WatchAuthSequenceState {
   sequenceStep: number;
   sequence: Array<number>;
   individualTimes: Array<number>;
   sequenceTime: number | undefined;
 }
 
-const WatchAuthSequence = ({ items }: WatchAuthSequenceProps) => {
+const initialState: WatchAuthSequenceState = {
+  sequenceStep: 0,
+  sequence: [],
+  individualTimes: [],
+  sequenceTime: undefined,
+};
+
+const WatchAuthSequence = ({
+  items,
+  parentState,
+  setParentState,
+}: WatchAuthSequenceProps) => {
   const startSequenceTime = useRef<number>(0);
   const lastClickTime = useRef<number>(0);
-  const [sequenceState, setSequenceState] = useState<WatchAuthSequenceState>({
-    sequenceStep: 0,
-    sequence: [],
-    individualTimes: [],
-    sequenceTime: undefined,
-  });
+  const [sequenceState, setSequenceState] =
+    useState<WatchAuthSequenceState>(initialState);
   const sequenceLength: number = 5;
   const numberOfCards: number = 6;
 
@@ -38,6 +47,7 @@ const WatchAuthSequence = ({ items }: WatchAuthSequenceProps) => {
         individualTimes: [...state.individualTimes, timeFromLastClick],
         sequenceTime: timeNow - startSequenceTime.current,
       }));
+
       return;
     }
     setSequenceState((state) => ({
@@ -49,20 +59,34 @@ const WatchAuthSequence = ({ items }: WatchAuthSequenceProps) => {
   };
 
   useEffect(() => {
-    startSequenceTime.current = new Date().getTime();
-    lastClickTime.current = new Date().getTime();
+    // On initial component mount get current time
+    const timeNow: number = new Date().getTime();
+    startSequenceTime.current = timeNow;
+    lastClickTime.current = timeNow;
   }, []);
 
   useEffect(() => {
-    if (sequenceState.sequenceStep === sequenceLength - 1) {
-      // call setParentState
+    if (sequenceState.sequenceTime) {
+      // Set Parent State and reset current state to initial
+      setParentState(sequenceState);
+      setSequenceState(initialState);
+      const timeNow: number = new Date().getTime();
+      startSequenceTime.current = timeNow;
+      lastClickTime.current = timeNow;
     }
   }, [sequenceState]);
+
+  console.log(sequenceState);
   return (
     <>
-      {items.map((item, index) => (
-        <WatchAuthCard onClick={() => handleCardClick(index)} data={item} />
-      ))}
+      {sequenceState.sequenceTime ? (
+        <></>
+      ) : (
+        sequenceState.sequenceStep <= items.length &&
+        items[sequenceState.sequenceStep].map((item, index) => (
+          <WatchAuthCard onClick={() => handleCardClick(index)} data={item} />
+        ))
+      )}
     </>
   );
 };
