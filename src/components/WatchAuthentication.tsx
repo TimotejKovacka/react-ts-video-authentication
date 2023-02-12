@@ -112,7 +112,7 @@ const WatchAuthentication = ({
   };
   console.log(stepState);
   return (
-    <div>
+    <>
       {stepState.isSuccessful !== undefined ? (
         stepState.isSuccessful ? (
           <SuccessfulUnlock setFormStep={setFormStep} />
@@ -120,7 +120,7 @@ const WatchAuthentication = ({
           <UnsuccessfulUnlock setFormStep={setFormStep} />
         )
       ) : (
-        <div className='grid grid-cols-3 grid-rows-2 grid-flow-row gap-5'>
+        <div className="grid grid-cols-3 grid-rows-2 grid-flow-row gap-5 px-4">
           {dummyItems.length > 0 && (
             <WatchAuthSequence
               items={dummyItems}
@@ -129,9 +129,9 @@ const WatchAuthentication = ({
             />
           )}
         </div>
+        // <MultiStepProgressBar step={authState.step} numberOfSteps={4} />
       )}
-      {/* <MultiStepProgressBar step={authState.step} numberOfSteps={4} /> */}
-    </div>
+    </>
   );
 };
 

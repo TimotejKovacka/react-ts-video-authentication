@@ -7,6 +7,7 @@ import React, {
   useState,
 } from "react";
 import { MultiStepFormProps } from "./MultiStepForm";
+import reactLogo from "../assets/react.svg";
 
 export interface EntryPointProps extends MultiStepFormProps {
   setFormStep: Dispatch<SetStateAction<number>>;
@@ -42,17 +43,27 @@ const EntryPoint = ({
   };
 
   return (
-    <div>
-      {/* Logo here */}
-      <input
-        type='text'
-        placeholder='Email...'
-        name='email'
-        // onChange={handleValuesChange}
-      />
-      <button type='button' onClick={() => setFormStep((step) => step + 1)}>
-        Start
-      </button>
+    <div className="flex flex-col">
+      <img src={reactLogo} alt="Logo" className="pb-12" />
+      <form onSubmit={handleEntryPointSubmit} className="flex flex-col">
+        <label htmlFor="email" className="text-left text-white">
+          Email:
+        </label>
+        <input
+          type="text"
+          placeholder="Email..."
+          name="email"
+          className="mb-4 rounded-sm focus:ring focus:ring-primary focus:outline-none p-1"
+          autoComplete="off"
+        />
+        <button
+          type="button"
+          onClick={() => setFormStep((step) => step + 1)}
+          className="text-white border-primary border-2 rounded-md hover:bg-primary transition-colors font-semibold"
+        >
+          Start
+        </button>
+      </form>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
-import "./App.css";
 import EntryPoint from "./components/EntryPoint";
 import MultiStepForm from "./components/MultiStepForm";
 import PasswordStep from "./components/PasswordStep";
 import WatchAuthentication from "./components/WatchAuthentication";
+import "./App.css";
 
 interface StepsInterface {
   label: string;
@@ -67,7 +67,7 @@ function App() {
   // });
 
   return (
-    <div className='App'>
+    <div className="App">
       <MultiStepForm formData={formState} setFormData={setFormState} />
       {/* <WatchAuthentication formData={formState} setFormData={setFormState} /> */}
     </div>

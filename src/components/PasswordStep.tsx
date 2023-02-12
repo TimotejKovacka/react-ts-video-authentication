@@ -29,6 +29,7 @@ const PasswordStep = ({
   setFormStep,
   passwordSecret,
 }: PasswordStepProps) => {
+  const pwdRef = useRef<HTMLInputElement>(null);
   const currentAttemptStartTime = useRef<number>(0);
   const [stepState, setStepState] = useState<PasswordStepState>({
     passwords: [],
@@ -36,10 +37,12 @@ const PasswordStep = ({
     isValid: undefined,
     isSuccessful: undefined,
   });
+  const [pwd, setPwd] = useState<string>("");
   const maxNumberOfTries: number = 5;
 
   const handlePasswordStepSubmit = (e: FormEvent) => {
     e.preventDefault();
+    setPwd("");
     // Time
     const timeNow: number = new Date().getTime();
     const attemptTime: number = timeNow - currentAttemptStartTime.current;
@@ -81,11 +84,13 @@ const PasswordStep = ({
 
   useEffect(() => {
     currentAttemptStartTime.current = new Date().getTime();
+    pwdRef.current?.focus();
   }, []);
 
   useEffect(() => {
     if (stepState.isValid === false) {
       currentAttemptStartTime.current = new Date().getTime();
+      pwdRef.current?.focus();
     }
   }, [stepState.isValid]);
 
@@ -99,9 +104,27 @@ const PasswordStep = ({
           <UnsuccessfulUnlock setFormStep={setFormStep} />
         )
       ) : (
-        <form onSubmit={handlePasswordStepSubmit}>
-          <input type='password' placeholder='Password...' name='password' />
-          <button type='submit'>Submit</button>
+        <form onSubmit={handlePasswordStepSubmit} className="flex flex-col">
+          <label htmlFor="password" className="text-left text-white">
+            Password:
+          </label>
+          <input
+            type="password"
+            placeholder="Password..."
+            name="password"
+            className={`mb-4 rounded-sm p-1 focus:outline-none focus:ring focus:ring-primary ${
+              !stepState.isValid && pwd === "" && "ring ring-error"
+            }`}
+            ref={pwdRef}
+            onChange={(e) => setPwd(e.target.value)}
+            value={pwd}
+          />
+          <button
+            type="submit"
+            className="text-white border-primary border-2 rounded-md hover:bg-primary transition-colors font-semibold focus:bg-primary"
+          >
+            Submit
+          </button>
         </form>
       )}
     </div>

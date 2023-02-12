@@ -58,7 +58,7 @@ const MultiStepForm = ({ formData, setFormData }: MultiStepFormProps) => {
         return <EndPoint />;
     }
   };
-  return <div>{conditionalComponent()}</div>;
+  return <>{conditionalComponent()}</>;
 };
 
 export default MultiStepForm;
