@@ -1,9 +1,10 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import EntryPoint from "./components/EntryPoint";
 import MultiStepForm from "./components/MultiStepForm";
 import PasswordStep from "./components/PasswordStep";
 import WatchAuthentication from "./components/WatchAuthentication";
 import "./App.css";
+import axios from "axios";
 
 interface StepsInterface {
   label: string;
@@ -17,6 +18,17 @@ interface SecretData {
 
 export interface FormData extends SecretData {
   email: string;
+  sequenceData: Array<Array<{ title: string; poster_url: string }>>;
+}
+
+interface DjangoResponse {
+  data: {
+    [key: string]: {
+      title: string;
+      poster_url: string;
+      correct_answer: boolean;
+    }[];
+  };
 }
 
 function App() {
@@ -26,48 +38,44 @@ function App() {
     email: "",
     password: "",
     authSequence: [],
+    sequenceData: [],
   });
-  // const stepComponents = [
-  //   <EntryPoint />,
-  //   <PasswordStep />,
-  //   <WatchAuthentication />,
-  // ];
-  // const [steps, setSteps] = useState<Array<StepsInterface>>([
-  //   {
-  //     label: "Account Details",
-  //     isValid: undefined,
-  //   },
-  //   {
-  //     label: "Personal Details",
-  //     isValid: undefined,
-  //   },
-  //   {
-  //     label: "Payment Details",
-  //     isValid: undefined,
-  //   },
-  // ]);
-  // const lastStepIndex = steps.length - 1;
-  // const isLastStep = lastStepIndex === authStep;
-  // const isPreviousStepsValid =
-  //   steps
-  //     .slice(0, authStep)
-  //     .findIndex((currentStep) => currentStep.isValid === false) === -1;
-  // const onStepSubmit = useCallback((event) => {
-  //   const { isValid, values } = event;
-  //   const currentSteps = steps.map((currentStep, index) => ({
-  //     ...currentStep,
-  //     isValid: index === authStep ? isValid : currentStep.isValid,
-  //   }));
-  //   setSteps(currentSteps);
-  //   setAuthStep((step) => Math.min(step + 1, lastStepIndex));
-  //   setFormState(values);
-  //   if (isLastStep && isPreviousStepsValid && isValid) {
-  //     alert("finished");
-  //   }
-  // });
+
+  useEffect(() => {
+    const fetchDjango = async () => {
+      const { data } = await axios.get<DjangoResponse>(
+        "http://localhost:8000/"
+      );
+      console.log(data);
+      const indexes = Object.values(data)
+        .flatMap((arr) =>
+          arr
+            .map((item: any, index: number) =>
+              item.correct_answer ? index : null
+            )
+            .filter((i: number) => i !== null)
+        )
+        .flat();
+      console.log(indexes);
+      // convert django response to array of arrays of objects with title and poster_url
+      const sequenceData = Object.values(data).map((arr) =>
+        arr.map((item: any) => ({
+          title: item.title,
+          poster_url: item.poster_url,
+        }))
+      );
+      console.log(sequenceData);
+      setFormState((prevState) => ({
+        ...prevState,
+        authSequence: indexes,
+        sequenceData: sequenceData,
+      }));
+    };
+    fetchDjango();
+  }, []);
 
   return (
-    <div className="App">
+    <div className='App'>
       <MultiStepForm formData={formState} setFormData={setFormState} />
       {/* <WatchAuthentication formData={formState} setFormData={setFormState} /> */}
     </div>

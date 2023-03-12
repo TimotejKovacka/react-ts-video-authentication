@@ -18,7 +18,6 @@ import { isEqual } from "lodash";
 
 export interface WatchAuthenticationProps extends MultiStepFormProps {
   setFormStep: Dispatch<SetStateAction<number>>;
-  sequenceSecret: Array<number>;
 }
 
 type DummyJson = {
@@ -37,9 +36,9 @@ export interface WatchAuthenticationState {
 }
 
 const WatchAuthentication = ({
+  formData,
   setFormData,
   setFormStep,
-  sequenceSecret,
 }: WatchAuthenticationProps) => {
   const [stepState, setStepState] = useState<WatchAuthenticationState>({
     isValid: undefined,
@@ -50,30 +49,16 @@ const WatchAuthentication = ({
   });
   const maxNumberOfTries: number = 5;
   //
-  const [dummyItems, setDummyItems] = useState<
-    Array<Array<Object & { thumbnail: string }>>
-  >([]);
-
-  useEffect(() => {
-    const fetchDummy = async () => {
-      const { data } = await axios.get<DummyJson>(
-        "https://dummyjson.com/products"
-      );
-      const dummyArr = [];
-      for (let i = 0; i < 5; i++) {
-        dummyArr.push(data.products.slice(i * 6, (i + 1) * 6));
-      }
-      setDummyItems(dummyArr);
-    };
-    fetchDummy();
-  }, []);
+  // const [dummyItems, setDummyItems] = useState<
+  //   Array<Array<Object & { thumbnail: string }>>
+  // >([]);
 
   const handleWatchAuthenticationStepSubmit = (
     sequenceState: WatchAuthSequenceState
   ) => {
     console.log("Setting parents state");
-    console.log(isEqual(sequenceSecret, sequenceState.sequence));
-    if (isEqual(sequenceSecret, sequenceState.sequence)) {
+    console.log(isEqual(formData.authSequence, sequenceState.sequence));
+    if (isEqual(formData.authSequence, sequenceState.sequence)) {
       setStepState((state) => ({
         isValid: true,
         isSuccessful: true,
@@ -120,14 +105,16 @@ const WatchAuthentication = ({
           <UnsuccessfulUnlock setFormStep={setFormStep} />
         )
       ) : (
-        <div className="grid grid-cols-3 grid-rows-2 grid-flow-row gap-5 px-4">
-          {dummyItems.length > 0 && (
-            <WatchAuthSequence
-              items={dummyItems}
-              parentState={stepState}
-              setParentState={handleWatchAuthenticationStepSubmit}
-            />
-          )}
+        <div className='h-screen container'>
+          <div className='grid grid-cols-3 grid-rows-3 grid-flow-row gap-5 px-4 h-full'>
+            {formData.sequenceData.length > 0 && (
+              <WatchAuthSequence
+                items={formData.sequenceData}
+                parentState={stepState}
+                setParentState={handleWatchAuthenticationStepSubmit}
+              />
+            )}
+          </div>
         </div>
         // <MultiStepProgressBar step={authState.step} numberOfSteps={4} />
       )}

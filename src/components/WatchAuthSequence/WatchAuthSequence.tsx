@@ -3,7 +3,7 @@ import WatchAuthCard from "../WatchAuthCard/WatchAuthCard";
 import { WatchAuthenticationState } from "../WatchAuthentication";
 
 interface WatchAuthSequenceProps {
-  items: Array<Array<Object & { thumbnail: string }>>;
+  items: Array<Array<{ title: string; poster_url: string }>>;
   parentState: WatchAuthenticationState;
   setParentState: (sequenceState: WatchAuthSequenceState) => void;
 }
@@ -32,7 +32,7 @@ const WatchAuthSequence = ({
   const [sequenceState, setSequenceState] =
     useState<WatchAuthSequenceState>(initialState);
   const sequenceLength: number = 5;
-  const numberOfCards: number = 6;
+  const numberOfCards: number = 9;
 
   const handleCardClick = (cardIndex: number) => {
     const timeNow: number = new Date().getTime();

@@ -49,7 +49,6 @@ const MultiStepForm = ({ formData, setFormData }: MultiStepFormProps) => {
             formData={formData}
             setFormData={setFormData}
             setFormStep={setFormStep}
-            sequenceSecret={secrets.sequenceSecret}
           />
         );
       case 3:

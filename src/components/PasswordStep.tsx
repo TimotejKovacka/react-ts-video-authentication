@@ -90,7 +90,6 @@ const PasswordStep = ({
   useEffect(() => {
     if (stepState.isValid === false) {
       currentAttemptStartTime.current = new Date().getTime();
-      pwdRef.current?.focus();
     }
   }, [stepState.isValid]);
 
@@ -104,14 +103,14 @@ const PasswordStep = ({
           <UnsuccessfulUnlock setFormStep={setFormStep} />
         )
       ) : (
-        <form onSubmit={handlePasswordStepSubmit} className="flex flex-col">
-          <label htmlFor="password" className="text-left text-white">
+        <form onSubmit={handlePasswordStepSubmit} className='flex flex-col'>
+          <label htmlFor='password' className='text-left text-white'>
             Password:
           </label>
           <input
-            type="password"
-            placeholder="Password..."
-            name="password"
+            type='password'
+            placeholder='Password...'
+            name='password'
             className={`mb-4 rounded-sm p-1 focus:outline-none focus:ring focus:ring-primary ${
               !stepState.isValid && pwd === "" && "ring ring-error"
             }`}
@@ -120,8 +119,8 @@ const PasswordStep = ({
             value={pwd}
           />
           <button
-            type="submit"
-            className="text-white border-primary border-2 rounded-md hover:bg-primary transition-colors font-semibold focus:bg-primary"
+            type='submit'
+            className='text-white border-primary border-2 rounded-md hover:bg-primary transition-colors font-semibold focus:bg-primary'
           >
             Submit
           </button>
