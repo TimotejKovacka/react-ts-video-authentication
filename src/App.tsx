@@ -46,7 +46,7 @@ function App() {
       const { data } = await axios.get<DjangoResponse>(
         "http://localhost:8000/"
       );
-      console.log(data);
+      console.log("data", data);
       const indexes = Object.values(data)
         .flatMap((arr) =>
           arr
@@ -56,7 +56,7 @@ function App() {
             .filter((i: number) => i !== null)
         )
         .flat();
-      console.log(indexes);
+      console.log("Correct sequence", indexes);
       // convert django response to array of arrays of objects with title and poster_url
       const sequenceData = Object.values(data).map((arr) =>
         arr.map((item: any) => ({
@@ -64,7 +64,7 @@ function App() {
           poster_url: item.poster_url,
         }))
       );
-      console.log(sequenceData);
+      console.log("Correct sequence data", sequenceData);
       setFormState((prevState) => ({
         ...prevState,
         authSequence: indexes,
